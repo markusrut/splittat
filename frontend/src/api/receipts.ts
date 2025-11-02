@@ -1,15 +1,19 @@
-import { apiClient } from './client';
-import type { Receipt, ReceiptListItem, UpdateReceiptItemsRequest } from '@/types';
+import { apiClient } from "./client";
+import type {
+  Receipt,
+  ReceiptListItem,
+  UpdateReceiptItemsRequest,
+} from "@/types";
 
 export const receiptsApi = {
   // Upload receipt
   upload: async (file: File): Promise<Receipt> => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const response = await apiClient.post<Receipt>('/receipts', formData, {
+    const response = await apiClient.post<Receipt>("/receipts", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
@@ -17,7 +21,7 @@ export const receiptsApi = {
 
   // Get all receipts for current user
   getAll: async (): Promise<ReceiptListItem[]> => {
-    const response = await apiClient.get<ReceiptListItem[]>('/receipts');
+    const response = await apiClient.get<ReceiptListItem[]>("/receipts");
     return response.data;
   },
 
@@ -32,7 +36,10 @@ export const receiptsApi = {
     id: string,
     data: UpdateReceiptItemsRequest
   ): Promise<Receipt> => {
-    const response = await apiClient.put<Receipt>(`/receipts/${id}/items`, data);
+    const response = await apiClient.put<Receipt>(
+      `/receipts/${id}/items`,
+      data
+    );
     return response.data;
   },
 

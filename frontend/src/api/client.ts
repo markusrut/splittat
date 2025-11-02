@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
 // Create axios instance with base configuration
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://localhost:5001/api",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 30000, // 30 seconds
 });
@@ -13,7 +13,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // Get token from localStorage
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -40,26 +40,26 @@ apiClient.interceptors.response.use(
 
       if (status === 401) {
         // Unauthorized - clear token and redirect to login
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("auth_user");
 
         // Only redirect if not already on login page
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
         }
       }
 
       // Return error data for component handling
-      return Promise.reject(data || { message: 'An error occurred' });
+      return Promise.reject(data || { message: "An error occurred" });
     } else if (error.request) {
       // Request made but no response received
       return Promise.reject({
-        message: 'Network error. Please check your connection.',
+        message: "Network error. Please check your connection.",
       });
     } else {
       // Something else happened
       return Promise.reject({
-        message: error.message || 'An unexpected error occurred',
+        message: error.message || "An unexpected error occurred",
       });
     }
   }

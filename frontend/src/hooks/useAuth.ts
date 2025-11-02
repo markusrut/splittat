@@ -1,19 +1,24 @@
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { authApi } from '@/api/auth';
-import { useAuthStore } from '@/store/authStore';
-import type { LoginRequest, RegisterRequest } from '@/types';
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { authApi } from "@/api/auth";
+import { useAuthStore } from "@/store/authStore";
+import type { LoginRequest, RegisterRequest } from "@/types";
 
 export const useAuth = () => {
   const navigate = useNavigate();
-  const { login: loginStore, logout: logoutStore, user, isAuthenticated } = useAuthStore();
+  const {
+    login: loginStore,
+    logout: logoutStore,
+    user,
+    isAuthenticated,
+  } = useAuthStore();
 
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (response) => {
       loginStore(response.token, response.user);
-      navigate('/receipts');
+      navigate("/receipts");
     },
   });
 
@@ -22,14 +27,14 @@ export const useAuth = () => {
     mutationFn: (data: RegisterRequest) => authApi.register(data),
     onSuccess: (response) => {
       loginStore(response.token, response.user);
-      navigate('/receipts');
+      navigate("/receipts");
     },
   });
 
   // Logout function
   const logout = () => {
     logoutStore();
-    navigate('/login');
+    navigate("/login");
   };
 
   return {

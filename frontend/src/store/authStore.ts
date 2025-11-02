@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { User } from '@/types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { User } from "@/types";
 
 interface AuthState {
   user: User | null;
@@ -22,8 +22,8 @@ export const useAuthStore = create<AuthState>()(
 
       login: (token: string, user: User) => {
         // Store token in localStorage for axios interceptor
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('auth_user', JSON.stringify(user));
+        localStorage.setItem("auth_token", token);
+        localStorage.setItem("auth_user", JSON.stringify(user));
 
         set({
           token,
@@ -34,8 +34,8 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         // Clear token from localStorage
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("auth_user");
 
         set({
           token: null,
@@ -45,12 +45,12 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setUser: (user: User) => {
-        localStorage.setItem('auth_user', JSON.stringify(user));
+        localStorage.setItem("auth_user", JSON.stringify(user));
         set({ user });
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       partialize: (state) => ({
         token: state.token,
         user: state.user,

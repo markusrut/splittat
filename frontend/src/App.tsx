@@ -1,10 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { HomePage } from '@/pages/HomePage';
-import { LoginPage } from '@/pages/LoginPage';
-import { RegisterPage } from '@/pages/RegisterPage';
-import { ReceiptsPage } from '@/pages/ReceiptsPage';
-import { ReceiptDetailPage } from '@/pages/ReceiptDetailPage';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { HomePage } from "@/pages/HomePage";
+import { LoginPage } from "@/pages/LoginPage";
+import { RegisterPage } from "@/pages/RegisterPage";
+import { ReceiptsPage } from "@/pages/ReceiptsPage";
+import { ReceiptDetailPage } from "@/pages/ReceiptDetailPage";
 
 function App() {
   return (

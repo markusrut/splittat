@@ -26,11 +26,13 @@ export interface AuthResponse {
 }
 
 // Receipt types
-export enum ReceiptStatus {
-  Processing = 'Processing',
-  Ready = 'Ready',
-  Failed = 'Failed',
-}
+export const ReceiptStatus = {
+  Processing: "Processing",
+  Ready: "Ready",
+  Failed: "Failed",
+} as const;
+
+export type ReceiptStatus = (typeof ReceiptStatus)[keyof typeof ReceiptStatus];
 
 export interface ReceiptItem {
   id: string;
@@ -66,7 +68,7 @@ export interface ReceiptListItem {
 }
 
 export interface UpdateReceiptItemsRequest {
-  items: Omit<ReceiptItem, 'id'>[];
+  items: Omit<ReceiptItem, "id">[];
 }
 
 // API Error type

@@ -23,6 +23,24 @@ A mobile-first PWA for scanning receipts, extracting items via OCR, and splittin
 
 **Package Manager:** Yarn (v4.10.3+)
 
+**Code Quality Tools:**
+- **Prettier 3.6.2:** Code formatting (semi, double quotes, 80 char width, 2-space tabs)
+- **ESLint 9.36.0:** Linting with TypeScript, React, React Hooks rules
+- **Configuration Files:**
+  - `.prettierrc` - Prettier formatting rules
+  - `.prettierignore` - Ignored paths (dist, .yarn, node_modules, .pnp.*, coverage)
+  - `eslint.config.js` - ESLint configuration with globalIgnores and test file rules
+
+**Testing Setup:**
+- **Framework:** Vitest 4.0.6 (fast, Vite-native test runner)
+- **Testing Library:** @testing-library/react 16.3.0, @testing-library/jest-dom 6.9.1
+- **Test Environment:** jsdom 27.1.0
+- **User Interaction:** @testing-library/user-event 14.6.1
+- **Configuration:** `vitest.config.ts` with globals, jsdom environment, setup files
+- **Custom Test Utilities:** `src/test/test-utils.tsx` provides custom render with QueryClient and Router providers
+- **Test Location:** Adjacent to source files (e.g., `Button.tsx` → `Button.test.tsx`)
+- **Current Coverage:** 6 passing tests for Button component
+
 ## Development Commands
 
 ### Frontend (from `frontend/` directory)
@@ -31,6 +49,12 @@ yarn dev             # Start dev server (Vite) on localhost:5173
 yarn build           # Build for production (TypeScript + Vite)
 yarn lint            # Run ESLint
 yarn preview         # Preview production build
+yarn test            # Run tests in watch mode
+yarn test:ui         # Run tests with Vitest UI
+yarn test:run        # Run tests once (CI mode)
+yarn test:coverage   # Run tests with coverage report
+yarn format          # Format code with Prettier
+yarn format:check    # Check code formatting without changes
 ```
 
 ### Backend (from `backend/Splittat.API/` directory)
@@ -90,17 +114,33 @@ The backend follows a lightweight service-oriented architecture using .NET Minim
 ✅ TypeScript types defined for User, Auth, Receipt entities
 ✅ Custom useAuth hook wrapping auth mutations
 ✅ Placeholder pages created (Home, Login, Register, Receipts, ReceiptDetail)
-⏳ UI components (Button, Input, Card, Loading) - pending
-⏳ Auth forms with validation - pending
-⏳ Receipt upload/list/detail components - pending
-⏳ Layout components (Header, Layout) - pending
+✅ UI components (Button, Input, Card, Loading, ErrorMessage) with forwardRef pattern
+✅ Auth forms with React Hook Form + Zod validation (LoginPage, RegisterPage)
+✅ Layout components (Header with nav/dark mode, Layout wrapper)
+✅ Dark mode implementation with Zustand persistence (useDarkMode hook)
+✅ Test framework setup (Vitest + Testing Library + jsdom)
+✅ Code quality tools (Prettier formatting, ESLint configured, 6 passing tests)
+⏳ Receipt upload/scanner component - pending
+⏳ Receipt list/detail components - pending
 
 **Structure:**
-- `src/pages/` - Route-level components (HomePage, LoginPage, RegisterPage, ReceiptsPage, ReceiptDetailPage)
+- `src/pages/` - Route-level components
+  - `HomePage.tsx` - Landing page ✅
+  - `LoginPage.tsx` - Login form with React Hook Form + Zod ✅
+  - `RegisterPage.tsx` - Registration form with validation ✅
+  - `ReceiptsPage.tsx` - Receipt list page (placeholder) ✅
+  - `ReceiptDetailPage.tsx` - Receipt detail view (placeholder) ✅
 - `src/components/` - Reusable components
-  - `ui/` - Generic UI components (Button, Input, Card, Loading) - **to be created**
-  - `layout/` - Layout components (Header, Layout) - **to be created**
-  - `receipt/` - Receipt-specific components (ReceiptScanner, ReceiptViewer, ItemAssignment) - **to be created**
+  - `ui/` - Generic UI components ✅
+    - `Button.tsx` - Button with variants (primary, secondary, danger, outline, ghost) and loading states
+    - `Input.tsx` - Input field with label, error, helper text
+    - `Card.tsx` - Card container with Header, Body, Footer subcomponents
+    - `Loading.tsx` - Loading spinner and Skeleton components
+    - `ErrorMessage.tsx` - Alert/error display with dismissible option
+  - `layout/` - Layout components ✅
+    - `Header.tsx` - Navigation header with dark mode toggle and auth state
+    - `Layout.tsx` - Page wrapper with Header
+  - `receipt/` - Receipt-specific components (to be created)
   - `ProtectedRoute.tsx` - Route guard for authenticated routes ✅
 - `src/api/` - API client configuration and endpoint functions ✅
   - `client.ts` - Axios instance with JWT interceptor (401 auto-redirect)
@@ -109,6 +149,7 @@ The backend follows a lightweight service-oriented architecture using .NET Minim
   - `receipts.ts` - Receipt API functions (upload, getAll, getById, updateItems, delete)
 - `src/hooks/` - Custom React hooks
   - `useAuth.ts` - Auth hook with login/register mutations and logout ✅
+  - `useDarkMode.ts` - Dark mode state management with Zustand + localStorage persistence ✅
 - `src/store/` - Zustand stores
   - `authStore.ts` - Auth state with localStorage persistence ✅
 - `src/types/` - TypeScript type definitions ✅
@@ -128,6 +169,16 @@ The backend follows a lightweight service-oriented architecture using .NET Minim
 - **Mobile-First**: All UI designed for mobile with responsive enhancements
 - **PWA Capabilities**: Service worker for offline support, installable (Phase 3)
 - **JWT Authentication**: Token stored in localStorage, injected via Axios interceptor
+
+**Component Patterns:**
+- **forwardRef Pattern**: All UI components use React.forwardRef for proper ref handling
+- **HTMLAttributes Extension**: Components extend appropriate HTML*Attributes types for TypeScript safety
+  - Example: `Button extends ButtonHTMLAttributes<HTMLButtonElement>`
+  - Benefit: Automatic support for all standard HTML props (className, onClick, aria-*, data-*, etc.)
+- **Controlled Components**: Form inputs use React Hook Form's register/control for validation
+- **Compound Components**: Card uses subcomponents (Card.Header, Card.Body, Card.Footer) for flexibility
+- **Loading States**: Async components show Loading/Skeleton while data fetches
+- **Error Boundaries**: ErrorMessage component for user-facing error display
 
 ### Database Schema (Key Entities)
 
@@ -184,6 +235,28 @@ Receipt (1) ----< (many) Split (1) ----< (many) ItemAssignment >---- (1) Receipt
 
 ## Development Workflow
 
+### Code Quality Standards (Frontend)
+
+**IMPORTANT: After making ANY code changes in the frontend, ALWAYS run these commands in order:**
+
+```bash
+yarn format    # Format all code with Prettier
+yarn lint      # Check for ESLint errors/warnings
+yarn test:run  # Run all tests in CI mode
+```
+
+**All three commands must pass with 0 errors/warnings before committing code.**
+
+- `yarn format` ensures consistent code style across the codebase
+- `yarn lint` catches TypeScript errors, React issues, and code quality problems
+- `yarn test:run` verifies all unit tests pass
+
+**Test-Driven Development:**
+- Write tests for new components/utilities before or during implementation
+- Place test files adjacent to source files: `Button.tsx` → `Button.test.tsx`
+- Use custom render from `src/test/test-utils.tsx` for components that need providers
+- Aim for meaningful tests that verify component behavior, not implementation details
+
 ### Adding New Features
 
 1. **Backend-First Approach:**
@@ -201,6 +274,7 @@ Receipt (1) ----< (many) Split (1) ----< (many) ItemAssignment >---- (1) Receipt
    - Create custom hook if needed (with TanStack Query)
    - Build UI components
    - Wire up to pages/routes
+   - **Run `yarn format && yarn lint && yarn test:run` before committing**
 
 ### Working with EF Core Migrations
 
