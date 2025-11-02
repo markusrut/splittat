@@ -1,6 +1,7 @@
-import { useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState, useEffect, type ChangeEvent } from "react";
 import { Camera, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui";
+import { useCamera } from "@/hooks/useCamera";
 
 export interface ReceiptUploadProps {
   onUpload: (file: File) => void;
@@ -14,9 +15,45 @@ export const ReceiptUpload = ({
   disabled = false,
 }: ReceiptUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isCameraAvailable, setIsCameraAvailable] = useState(false);
+  const [showCameraView, setShowCameraView] = useState(false);
+
+  const {
+    videoRef,
+    isCameraActive,
+    error: cameraError,
+    startCamera,
+    stopCamera,
+    capturePhoto,
+  } = useCamera();
+
+  // Check if camera is available on mount
+  useEffect(() => {
+    const checkCamera = async () => {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.mediaDevices &&
+        typeof navigator.mediaDevices.getUserMedia === "function"
+      ) {
+        try {
+          // Check if we have permission or can request it
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const hasCamera = devices.some(
+            (device) => device.kind === "videoinput"
+          );
+          setIsCameraAvailable(hasCamera);
+        } catch {
+          setIsCameraAvailable(false);
+        }
+      } else {
+        setIsCameraAvailable(false);
+      }
+    };
+
+    checkCamera();
+  }, []);
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,18 +91,93 @@ export const ReceiptUpload = ({
   const handleCancel = () => {
     setSelectedFile(null);
     setPreview(null);
+    setShowCameraView(false);
+    stopCamera();
     if (fileInputRef.current) fileInputRef.current.value = "";
-    if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
   const handleFileButtonClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleCameraButtonClick = () => {
-    cameraInputRef.current?.click();
+  const handleCameraButtonClick = async () => {
+    setShowCameraView(true);
+    await startCamera();
   };
 
+  const handleCapturePhoto = async () => {
+    const file = await capturePhoto();
+    if (file) {
+      setSelectedFile(file);
+      setShowCameraView(false);
+      stopCamera();
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCloseCameraView = () => {
+    setShowCameraView(false);
+    stopCamera();
+  };
+
+  // Camera view
+  if (showCameraView) {
+    return (
+      <div className="space-y-4">
+        <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 bg-black">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            className="w-full h-auto max-h-[70vh] object-contain"
+          />
+          <button
+            onClick={handleCloseCameraView}
+            className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Close camera"
+          >
+            <X className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+          </button>
+        </div>
+
+        {cameraError && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-sm text-red-700 dark:text-red-400">
+              {cameraError}
+            </p>
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <Button
+            onClick={handleCapturePhoto}
+            disabled={!isCameraActive}
+            loading={!isCameraActive}
+            fullWidth
+            className="gap-2"
+          >
+            <Camera className="h-5 w-5" />
+            Capture Photo
+          </Button>
+          <Button onClick={handleCloseCameraView} variant="outline">
+            Cancel
+          </Button>
+        </div>
+
+        <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+          Position the receipt within the camera view and tap Capture
+        </p>
+      </div>
+    );
+  }
+
+  // Preview view
   if (preview && selectedFile) {
     return (
       <div className="space-y-4">
@@ -111,9 +223,11 @@ export const ReceiptUpload = ({
       <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center bg-gray-50 dark:bg-gray-900/50">
         <div className="flex flex-col items-center gap-4">
           <div className="flex gap-4">
-            <div className="p-4 bg-primary-100 dark:bg-primary-900 rounded-full">
-              <Camera className="h-8 w-8 text-primary-600 dark:text-primary-400" />
-            </div>
+            {isCameraAvailable && (
+              <div className="p-4 bg-primary-100 dark:bg-primary-900 rounded-full">
+                <Camera className="h-8 w-8 text-primary-600 dark:text-primary-400" />
+              </div>
+            )}
             <div className="p-4 bg-secondary-100 dark:bg-secondary-900 rounded-full">
               <Upload className="h-8 w-8 text-secondary-600 dark:text-secondary-400" />
             </div>
@@ -124,23 +238,27 @@ export const ReceiptUpload = ({
               Upload Receipt
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Take a photo or select an image file
+              {isCameraAvailable
+                ? "Take a photo or select an image file"
+                : "Select an image file"}
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <Button
-              onClick={handleCameraButtonClick}
-              variant="primary"
-              disabled={disabled || uploading}
-              className="gap-2"
-            >
-              <Camera className="h-5 w-5" />
-              Take Photo
-            </Button>
+            {isCameraAvailable && (
+              <Button
+                onClick={handleCameraButtonClick}
+                variant="primary"
+                disabled={disabled || uploading}
+                className="gap-2"
+              >
+                <Camera className="h-5 w-5" />
+                Take Photo
+              </Button>
+            )}
             <Button
               onClick={handleFileButtonClick}
-              variant="secondary"
+              variant={isCameraAvailable ? "secondary" : "primary"}
               disabled={disabled || uploading}
               className="gap-2"
             >
@@ -155,7 +273,7 @@ export const ReceiptUpload = ({
         </div>
       </div>
 
-      {/* Hidden file inputs */}
+      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -163,15 +281,6 @@ export const ReceiptUpload = ({
         onChange={handleFileSelect}
         className="hidden"
         aria-label="Choose file"
-      />
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileSelect}
-        className="hidden"
-        aria-label="Take photo"
       />
     </div>
   );
