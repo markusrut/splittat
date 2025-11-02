@@ -318,7 +318,7 @@ Test edge cases:
 **Phase 4:** Production deployment, CI/CD
 **Phase 5:** Enhancements (payments, notifications, sharing)
 
-See [PHASE1_TODOS.md](PHASE1_TODOS.md) for detailed Phase 1 task breakdown.
+See [PHASE1_PLAN.md](PHASE1_PLAN.md) for detailed Phase 1 task breakdown and progress tracking.
 
 ## Configuration & Environment
 
