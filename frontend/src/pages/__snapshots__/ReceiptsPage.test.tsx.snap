@@ -1316,7 +1316,7 @@ exports[`ReceiptsPage > Snapshot Tests - With Data > matches snapshot on desktop
                     <span
                       data-testid="status-badge"
                     >
-                      Processing
+                      OcrInProgress
                     </span>
                   </div>
                   <div
@@ -1705,7 +1705,7 @@ exports[`ReceiptsPage > Snapshot Tests - With Data > matches snapshot on mobile 
                     <span
                       data-testid="status-badge"
                     >
-                      Processing
+                      OcrInProgress
                     </span>
                   </div>
                   <div
@@ -2094,7 +2094,7 @@ exports[`ReceiptsPage > Snapshot Tests - With Data > matches snapshot on tablet 
                     <span
                       data-testid="status-badge"
                     >
-                      Processing
+                      OcrInProgress
                     </span>
                   </div>
                   <div

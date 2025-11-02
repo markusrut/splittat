@@ -34,8 +34,6 @@ export const ReceiptStatusBadge = ({
         return "Processing OCR...";
       case ReceiptStatus.OcrCompleted:
         return "Parsing...";
-      case ReceiptStatus.Processing:
-        return "Processing";
       case ReceiptStatus.Ready:
         return "Ready";
       case ReceiptStatus.ParseFailed:
@@ -51,8 +49,7 @@ export const ReceiptStatusBadge = ({
     return (
       status === ReceiptStatus.Uploaded ||
       status === ReceiptStatus.OcrInProgress ||
-      status === ReceiptStatus.OcrCompleted ||
-      status === ReceiptStatus.Processing
+      status === ReceiptStatus.OcrCompleted
     );
   };
 

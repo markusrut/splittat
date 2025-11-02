@@ -22,8 +22,6 @@ export const ReceiptProcessingIndicator = ({
         return "Extracting text from receipt image...";
       case ReceiptStatus.OcrCompleted:
         return "OCR complete. Parsing receipt items...";
-      case ReceiptStatus.Processing:
-        return "Processing receipt data...";
       case ReceiptStatus.Ready:
         return confidence !== undefined
           ? `Receipt processed successfully! (${(confidence * 100).toFixed(0)}% confidence)`

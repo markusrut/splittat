@@ -32,13 +32,6 @@ describe("ReceiptStatusBadge", () => {
     expect(badge?.querySelector("svg")).toBeInTheDocument();
   });
 
-  it("renders Processing status with spinner", () => {
-    render(<ReceiptStatusBadge status={ReceiptStatus.Processing} />);
-    expect(screen.getByText("Processing")).toBeInTheDocument();
-    const badge = screen.getByText("Processing").closest("span");
-    expect(badge?.querySelector("svg")).toBeInTheDocument();
-  });
-
   it("renders ParseFailed status correctly", () => {
     render(<ReceiptStatusBadge status={ReceiptStatus.ParseFailed} />);
     expect(screen.getByText("Parse Failed")).toBeInTheDocument();

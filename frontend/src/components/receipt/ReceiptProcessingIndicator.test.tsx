@@ -43,14 +43,6 @@ describe("ReceiptProcessingIndicator", () => {
         screen.getByText(/This may take a few moments/i)
       ).toBeInTheDocument();
     });
-
-    it("renders Processing status with spinner and message", () => {
-      render(<ReceiptProcessingIndicator status={ReceiptStatus.Processing} />);
-      expect(screen.getByText(/Processing receipt data/i)).toBeInTheDocument();
-      expect(
-        screen.getByText(/This may take a few moments/i)
-      ).toBeInTheDocument();
-    });
   });
 
   describe("Ready state", () => {
@@ -137,7 +129,7 @@ describe("ReceiptProcessingIndicator", () => {
     it("applies custom className", () => {
       const { container } = render(
         <ReceiptProcessingIndicator
-          status={ReceiptStatus.Processing}
+          status={ReceiptStatus.OcrInProgress}
           className="custom-test-class"
         />
       );
@@ -146,7 +138,7 @@ describe("ReceiptProcessingIndicator", () => {
 
     it("has correct border and padding classes", () => {
       const { container } = render(
-        <ReceiptProcessingIndicator status={ReceiptStatus.Processing} />
+        <ReceiptProcessingIndicator status={ReceiptStatus.OcrInProgress} />
       );
       const mainDiv = container.querySelector("div");
       expect(mainDiv?.className).toMatch(/rounded-lg/);

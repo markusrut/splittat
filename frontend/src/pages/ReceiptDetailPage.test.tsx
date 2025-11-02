@@ -278,21 +278,6 @@ describe("ReceiptDetailPage", () => {
       expect(container).toMatchSnapshot();
     });
 
-    it("matches snapshot with Processing status", () => {
-      vi.mocked(useReceiptsModule.useReceipt).mockReturnValue({
-        receipt: { ...mockReceipt, status: ReceiptStatus.Processing },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        updateItems: vi.fn(),
-        updateLoading: false,
-        updateError: null,
-      });
-
-      const { container } = render(<ReceiptDetailPage />);
-      expect(container).toMatchSnapshot();
-    });
-
     it("matches snapshot with ParseFailed status", () => {
       vi.mocked(useReceiptsModule.useReceipt).mockReturnValue({
         receipt: {
@@ -443,7 +428,7 @@ describe("ReceiptDetailPage", () => {
 
     it("disables edit button when receipt is not Ready", () => {
       vi.mocked(useReceiptsModule.useReceipt).mockReturnValue({
-        receipt: { ...mockReceipt, status: ReceiptStatus.Processing },
+        receipt: { ...mockReceipt, status: ReceiptStatus.OcrInProgress },
         isLoading: false,
         error: null,
         refetch: vi.fn(),

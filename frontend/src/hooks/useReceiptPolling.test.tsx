@@ -37,7 +37,8 @@ describe("useReceiptPolling", () => {
 
   it("does not poll when disabled", async () => {
     renderHook(
-      () => useReceiptPolling("receipt-123", ReceiptStatus.Processing, false),
+      () =>
+        useReceiptPolling("receipt-123", ReceiptStatus.OcrInProgress, false),
       { wrapper }
     );
 
@@ -48,7 +49,7 @@ describe("useReceiptPolling", () => {
 
   it("does not poll when receiptId is undefined", async () => {
     renderHook(
-      () => useReceiptPolling(undefined, ReceiptStatus.Processing, true),
+      () => useReceiptPolling(undefined, ReceiptStatus.OcrInProgress, true),
       { wrapper }
     );
 
@@ -162,7 +163,7 @@ describe("useReceiptPolling", () => {
     );
 
     renderHook(
-      () => useReceiptPolling("receipt-789", ReceiptStatus.Processing, true),
+      () => useReceiptPolling("receipt-789", ReceiptStatus.OcrInProgress, true),
       { wrapper }
     );
 
@@ -235,7 +236,8 @@ describe("useReceiptPolling", () => {
       } as never);
 
     renderHook(
-      () => useReceiptPolling("receipt-retry", ReceiptStatus.Processing, true),
+      () =>
+        useReceiptPolling("receipt-retry", ReceiptStatus.OcrInProgress, true),
       { wrapper }
     );
 
@@ -273,7 +275,7 @@ describe("useReceiptPolling", () => {
 
     const { unmount } = renderHook(
       () =>
-        useReceiptPolling("receipt-cleanup", ReceiptStatus.Processing, true),
+        useReceiptPolling("receipt-cleanup", ReceiptStatus.OcrInProgress, true),
       { wrapper }
     );
 
