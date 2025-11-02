@@ -1,342 +1,395 @@
-# Phase 1: MVP Foundation - Task List
+# Phase 1: Backend MVP - Task List
 
 ## Overview
-Phase 1 focuses on setting up the foundational infrastructure for both frontend and backend, implementing basic authentication, and creating the core receipt upload and processing functionality.
+Phase 1 focuses on completing the backend API infrastructure with authentication (complete), file storage, OCR integration, and receipt processing functionality.
 
-**Estimated Duration**: 1-2 weeks
-**Goal**: Working MVP where users can register, login, upload receipts, and view OCR-extracted items
+**Estimated Duration**: 12-17 hours of focused development
+**Goal**: Working backend API where users can register, login, upload receipts, and view OCR-extracted items
 
 **Last Updated**: 2025-11-02
-**Current Status**: ~20% Complete - Infrastructure setup done, authentication implementation complete
+**Current Status**: ~35% Complete - Authentication fully implemented with tests, infrastructure setup done
 
 ---
 
-## Backend Tasks
+## Current Status Summary
 
-### 1. Project Setup & Configuration
+### ✅ Completed
+- [x] .NET 9 project setup with all required NuGet packages
+- [x] Database schema (all entities including Phase 2 bonus entities)
+- [x] EF Core migrations created (`InitialCreate`)
+- [x] JWT authentication infrastructure (JwtHelper, PasswordHasher)
+- [x] Auth service with registration and login
+- [x] Auth endpoints (POST /api/auth/register, POST /api/auth/login)
+- [x] Comprehensive auth endpoint tests (13 passing tests)
+- [x] CORS configuration for frontend
+- [x] Basic Program.cs configuration
+- [x] Docker Compose for PostgreSQL
 
-#### 1.1 Initialize .NET 9 Backend Project (Note: Using .NET 9, not .NET 8)
-- [x] Create `backend` directory
-- [x] Initialize .NET 9 Web API project with minimal API template
-- [x] Create solution file for better organization
-- [x] Setup `.gitignore` for .NET projects
-- [x] Install required NuGet packages:
-  - `Npgsql.EntityFrameworkCore.PostgreSQL` (9.0.4)
-  - `Microsoft.EntityFrameworkCore.Design` (9.0.10)
-  - `Microsoft.AspNetCore.Authentication.JwtBearer` (9.0.10)
-  - `SixLabors.ImageSharp` (3.1.12)
-  - `Serilog.AspNetCore` (9.0.0)
-  - `Swashbuckle.AspNetCore` (9.0.6)
+### 🔨 In Progress
+- Phase A: Infrastructure & Logging
 
-#### 1.2 Project Structure Setup
-- [x] Create folder structure:
-  - `Endpoints/` (empty)
-  - `Services/` (empty)
-  - `Data/Entities/` (complete with all entities)
-  - `Models/Requests/` (empty)
-  - `Models/Responses/` (empty)
-  - `Infrastructure/` (empty, needs Extension subdirectory)
-- [x] Configure `Program.cs` with basic service registration (CORS, DbContext)
-- [x] Setup `appsettings.json` and `appsettings.Development.json`
-
-#### 1.3 Configure Logging
-- [ ] Setup Serilog for structured logging
-- [ ] Configure console and file logging
-- [ ] Add request logging middleware
+### ⏳ Pending
+- Phase B: File Upload & Storage
+- Phase C: OCR Integration
+- Phase D: Receipt Processing Service & Endpoints
+- Phase E: Testing & Polish
 
 ---
 
-### 2. Database Setup (EF Core Code First)
+## Phase A: Infrastructure & Logging (1-2 hours)
+**Priority: Medium** - Foundational improvements
 
-#### 2.1 Create Database Context
-- [x] Create `AppDbContext.cs` in `Data/`
-- [x] Configure DbContext options in `Program.cs`
-- [x] Add connection string to `appsettings.json`
+### A.1 Configure Serilog
+- [ ] Configure Serilog in `Program.cs`:
+  - Add file logging (logs/splittat-.log)
+  - Add console logging with colored output
+  - Configure minimum log levels
+  - Add request logging middleware
+- [ ] Update existing services to use ILogger injection
+- [ ] Test logging output (console and file)
 
-#### 2.2 Create User Entity
-- [x] Create `User.cs` entity with all required properties
-- [x] Configure entity relationships in `AppDbContext`
-- [x] Add unique index on Email
-
-#### 2.3 Create Receipt Entities
-- [x] Create `Receipt.cs` entity with all fields including Status enum
-- [x] Create `ReceiptItem.cs` entity with all fields
-- [x] Configure one-to-many relationship (Receipt → ReceiptItems)
-- [x] Add indexes for performance
-- [x] **BONUS**: Phase 2 entities already created (Group, GroupMember, Split, ItemAssignment)
-
-#### 2.4 Database Migrations
-- [x] Install EF Core CLI tools (assumed installed globally)
-- [x] Create initial migration (`InitialCreate`)
-- [x] Review generated migration
-- [x] Apply migration to database (`dotnet ef database update`)
-- [ ] Test migration rollback capability
-
----
-
-### 3. Authentication System ✅ COMPLETED
-
-#### 3.1 JWT Infrastructure ✅
-- [x] Create `JwtHelper.cs` in `Infrastructure/`:
-  - Token generation method
-  - Token validation method
-  - Extract claims method
-- [x] Add JWT settings to `appsettings.json`:
-  - Secret key (min 32 characters)
-  - Issuer
-  - Audience
-  - Expiration time
-- [x] Configure JWT authentication in `Program.cs`
-
-#### 3.2 Password Hashing ✅
-- [x] Create `PasswordHasher.cs` in `Infrastructure/`:
-  - Hash password method (using BCrypt or built-in ASP.NET Core Identity)
-  - Verify password method
-
-#### 3.3 Auth Service ✅
-- [x] Create `AuthService.cs` in `Services/`:
-  - `RegisterAsync(RegisterRequest)` method
-  - `LoginAsync(LoginRequest)` method
-  - Email validation
-  - Duplicate email check
-  - Password validation
-
-#### 3.4 Auth DTOs ✅
-- [x] Create `LoginRequest.cs`:
-  - Email
-  - Password
-- [x] Create `RegisterRequest.cs`:
-  - Email
-  - Password
-  - FirstName
-  - LastName
-- [x] Create `AuthResponse.cs`:
-  - Token (JWT)
-  - UserId
-  - Email
-  - ExpiresAt
-
-#### 3.5 Auth Endpoints ✅
-- [x] Create `AuthEndpoints.cs` in `Endpoints/`
-- [x] Implement `POST /api/auth/register` endpoint
-- [x] Implement `POST /api/auth/login` endpoint
-- [x] Add input validation
-- [x] Add error handling
-- [x] Test with Swagger/Postman
-
----
-
-### 4. File Upload & Storage
-
-#### 4.1 File Storage Service
-- [ ] Create `FileStorageService.cs` in `Services/`
-- [ ] Implement local file storage:
-  - Create `wwwroot/uploads/` directory
-  - Save uploaded files with unique names (Guid)
-  - Return file URL/path
-- [ ] Add file validation:
-  - Check file size (max 10MB)
-  - Check file type (image only: jpg, png, pdf)
-  - Validate file exists
-- [ ] Configure static file serving in `Program.cs`
-
-#### 4.2 Image Processing
-- [ ] Add ImageSharp image optimization:
-  - Resize large images (max 2000px width)
-  - Compress to reduce file size
-  - Convert to standard format (JPEG)
-
----
-
-### 5. OCR Integration
-
-#### 5.1 OCR Service Setup
-- [ ] Choose OCR provider (Google Vision API or AWS Textract)
-- [ ] Create cloud account and get API credentials
-- [ ] Install OCR SDK package
-- [ ] Store credentials in `appsettings.json` or user secrets
-
-#### 5.2 OCR Service Implementation
-- [ ] Create `OcrService.cs` in `Services/`
-- [ ] Create `OcrResult.cs` model:
-  - RawText (string)
-  - MerchantName (string?)
-  - Date (DateTime?)
-  - Total (decimal?)
-  - Items (List<string>)
-  - Confidence (float)
-- [ ] Implement `ExtractTextAsync(string imagePath)` method
-- [ ] Handle OCR API errors gracefully
-- [ ] Add retry logic for transient failures
-
-#### 5.3 Receipt Parsing Logic
-- [ ] Create receipt text parser:
-  - Extract merchant name (top of receipt)
-  - Extract date (regex patterns)
-  - Extract total amount (keywords: "total", "amount due")
-  - Extract line items (name + price patterns)
-  - Extract tax and tip if present
-- [ ] Handle multiple receipt formats
-- [ ] Add confidence scoring
-
----
-
-### 6. Receipt Processing
-
-#### 6.1 Receipt Service
-- [ ] Create `ReceiptService.cs` in `Services/`
-- [ ] Implement `ProcessReceiptAsync(IFormFile, userId)`:
-  - Save image to storage
-  - Call OCR service
-  - Parse OCR result
-  - Create Receipt entity
-  - Create ReceiptItem entities
-  - Save to database
-  - Return ReceiptResponse
-- [ ] Implement `GetUserReceiptsAsync(userId)`
-- [ ] Implement `GetReceiptByIdAsync(receiptId)`
-- [ ] Implement `UpdateReceiptItemsAsync(receiptId, items)`
-- [ ] Implement `DeleteReceiptAsync(receiptId)`
-
-#### 6.2 Receipt DTOs
-- [ ] Create `ReceiptResponse.cs`:
-  - Id, MerchantName, Date, Total, Tax, Tip
-  - ImageUrl, Status, CreatedAt
-  - Items (List<ReceiptItemResponse>)
-- [ ] Create `ReceiptItemResponse.cs`:
-  - Id, Name, Price, Quantity, LineNumber
-- [ ] Create `UpdateReceiptItemsRequest.cs`:
-  - Items (List with Id, Name, Price, Quantity)
-
-#### 6.3 Receipt Endpoints
-- [ ] Create `ReceiptEndpoints.cs` in `Endpoints/`
-- [ ] Implement `POST /api/receipts` (upload & process)
-  - Accept multipart/form-data
-  - Validate file
-  - Require authentication
-  - Return 201 Created with receipt data
-- [ ] Implement `GET /api/receipts` (list user receipts)
-  - Filter by current user
-  - Order by CreatedAt descending
-  - Optional pagination
-- [ ] Implement `GET /api/receipts/{id}`
-  - Include receipt items
-  - Verify user owns receipt
-- [ ] Implement `PUT /api/receipts/{id}/items` (manual editing)
-- [ ] Implement `DELETE /api/receipts/{id}`
-- [ ] Test all endpoints
-
----
-
-### 7. API Configuration
-
-#### 7.1 CORS Setup
-- [x] Configure CORS in `Program.cs`:
-  - Allow localhost:5173 (Vite dev server)
-  - Allow credentials
-  - Allow all headers and methods
-- [ ] Test CORS with frontend (pending frontend implementation)
-
-#### 7.2 Error Handling
-- [ ] Create global exception handler middleware
-- [ ] Return consistent error response format:
-  - Status code
-  - Error message
-  - Error details (dev only)
-  - Timestamp
-- [ ] Handle common errors:
-  - 400 Bad Request (validation)
+### A.2 Global Error Handling Middleware
+- [ ] Create `Infrastructure/ErrorHandlingMiddleware.cs`
+- [ ] Create consistent error response model:
+  - StatusCode (int)
+  - Message (string)
+  - Details (string?, only in development)
+  - Timestamp (DateTime)
+- [ ] Handle common HTTP status codes:
+  - 400 Bad Request (validation errors)
   - 401 Unauthorized
   - 404 Not Found
   - 500 Internal Server Error
+- [ ] Register middleware in `Program.cs`
+- [ ] Log all exceptions with Serilog
+- [ ] Test error responses
 
-#### 7.3 Swagger/OpenAPI
-- [ ] Configure Swagger UI
-- [ ] Add XML documentation
-- [ ] Add JWT authentication to Swagger
-- [ ] Test all endpoints in Swagger
-
----
-
-### 8. Docker Setup
-
-#### 8.1 Docker Compose for PostgreSQL
-- [x] Create `docker-compose.yml` in project root with PostgreSQL service
-- [x] Configure port 5432, volumes, environment variables, and health check
-- [ ] Test database connection (need to start Docker and apply migrations)
-- [x] Document connection string in appsettings.json
-
-#### 8.2 Backend Dockerfile (Optional for Phase 1)
-- [ ] Create `Dockerfile` for .NET API
-- [ ] Add to docker-compose if desired
+### A.3 Swagger/OpenAPI Enhancement
+- [ ] Configure Swagger UI in `Program.cs` (currently using MapOpenApi)
+- [ ] Add JWT Bearer authentication to Swagger:
+  - Add security definition
+  - Add "Authorize" button in UI
+- [ ] Enable XML documentation comments (optional)
+- [ ] Test all auth endpoints in Swagger UI with JWT token
 
 ---
 
-## Frontend Tasks
+## Phase B: File Upload & Storage (2-3 hours)
+**Priority: High** - Blocks receipt upload functionality
 
-**All frontend tasks have been moved to [PHASE1_FRONTEND_TODOS.md](PHASE1_FRONTEND_TODOS.md) for easier tracking.**
+### B.1 File Storage Service
+- [ ] Create `Services/FileStorageService.cs`:
+  - `Task<string> SaveFileAsync(IFormFile file, Guid userId)` - Returns file path/URL
+  - `Task DeleteFileAsync(string filePath)` - Cleanup uploaded file
+  - `bool ValidateFile(IFormFile file)` - Validation helper
+- [ ] File validation logic:
+  - Max file size: 10MB
+  - Allowed types: image/jpeg, image/png, application/pdf
+  - Check file exists and is readable
+- [ ] Unique filename generation using Guid
+- [ ] Create `wwwroot/uploads/` directory structure
 
-This allows for better organization when jumping between backend and frontend work.
+### B.2 Image Processing with ImageSharp
+- [ ] Add image optimization in FileStorageService:
+  - Resize images if width > 2000px (maintain aspect ratio)
+  - Compress JPEG quality to 85
+  - Convert PNG to JPEG for consistency
+  - Skip processing for PDF files
+- [ ] Test with various image sizes and formats
+
+### B.3 Static File Serving
+- [ ] Configure static files middleware in `Program.cs`:
+  - `app.UseStaticFiles()` for wwwroot
+  - Map `/uploads` to `wwwroot/uploads/`
+- [ ] Test file access via HTTP (e.g., http://localhost:5000/uploads/filename.jpg)
+
+### B.4 Register Service
+- [ ] Add FileStorageService to DI container in `Program.cs`
+- [ ] Create interface `IFileStorageService` for testability (optional for MVP)
 
 ---
 
-## Documentation
+## Phase C: OCR Integration (3-4 hours)
+**Priority: High** - Core feature for receipt processing
 
-### 21. README & Docs
-- [ ] Create `backend/README.md`:
-  - Setup instructions
-  - Database migration commands
-  - Environment variables
-  - API endpoints documentation
-- [ ] Create `frontend/README.md`:
-  - Setup instructions
-  - Environment variables
-  - Development commands
-  - Project structure overview
-- [ ] Update root `README.md`:
-  - Project overview
-  - Quick start guide
-  - Links to backend/frontend READMEs
+### C.1 Choose OCR Provider
+**Decision: Google Vision API (recommended for MVP)**
+- Reasons: Better accuracy, simpler setup, good documentation
+- Alternative: AWS Textract (more complex, better for structured documents)
+
+### C.2 OCR Service Setup
+- [ ] Install NuGet package: `Google.Cloud.Vision.V1`
+- [ ] Create Google Cloud account (if needed)
+- [ ] Enable Vision API and get API credentials (JSON key file)
+- [ ] Store credentials using .NET User Secrets:
+  - `dotnet user-secrets init`
+  - `dotnet user-secrets set "Ocr:CredentialsPath" "/path/to/credentials.json"`
+- [ ] Add OCR configuration to `appsettings.json`:
+  ```json
+  "Ocr": {
+    "Provider": "GoogleVision",
+    "CredentialsPath": ""
+  }
+  ```
+
+### C.3 OCR Models
+- [ ] Create `Models/OcrResult.cs`:
+  - `string RawText` - Full OCR text
+  - `string? MerchantName` - Extracted merchant
+  - `DateTime? Date` - Extracted date
+  - `decimal? Total` - Extracted total amount
+  - `List<string> Items` - Raw line items
+  - `float Confidence` - OCR confidence score (0-1)
+
+### C.4 OCR Service Implementation
+- [ ] Create `Services/OcrService.cs`:
+  - `Task<OcrResult> ExtractTextAsync(string imagePath)`
+  - Google Vision API integration
+  - Error handling for API failures
+  - Retry logic for transient errors (max 3 retries)
+  - Log API calls and results
+- [ ] Register OcrService in DI (`Program.cs`)
+
+### C.5 Receipt Text Parser
+- [ ] Create receipt parsing logic in OcrService:
+  - **Merchant name**: Extract from top 3 lines (largest font/first non-empty)
+  - **Date**: Regex patterns for common formats:
+    - MM/DD/YYYY, DD/MM/YYYY
+    - Month DD, YYYY
+    - YYYY-MM-DD
+  - **Line items**: Pattern matching for "item name....$X.XX"
+  - **Total**: Keywords - "total", "amount due", "balance"
+  - **Tax**: Keywords - "tax", "hst", "gst", "vat"
+  - **Tip**: Keywords - "tip", "gratuity"
+- [ ] Handle multiple receipt formats (grocery, restaurant, retail)
+- [ ] Test with sample receipts
 
 ---
 
-## Success Criteria for Phase 1
+## Phase D: Receipt Processing Service & Endpoints (4-5 hours)
+**Priority: Critical** - Main user-facing feature
 
-✅ Backend API running on localhost:5000
-✅ Frontend running on localhost:5173
+### D.1 Receipt DTOs
+- [ ] Create `Models/Responses/ReceiptResponse.cs`:
+  - Guid Id
+  - string MerchantName
+  - DateTime? Date
+  - decimal Total
+  - decimal? Tax
+  - decimal? Tip
+  - string ImageUrl
+  - string Status (Processing, Ready, Failed)
+  - DateTime CreatedAt
+  - List<ReceiptItemResponse> Items
+- [ ] Create `Models/Responses/ReceiptItemResponse.cs`:
+  - Guid Id
+  - string Name
+  - decimal Price
+  - int Quantity
+  - int LineNumber
+- [ ] Create `Models/Requests/UpdateReceiptItemsRequest.cs`:
+  - List<UpdateItemDto> Items
+    - Guid Id
+    - string Name
+    - decimal Price
+    - int Quantity
+
+### D.2 Receipt Service Implementation
+- [ ] Create `Services/ReceiptService.cs`:
+  - `Task<ReceiptResponse> ProcessReceiptAsync(IFormFile file, Guid userId)`
+    - Save image via FileStorageService
+    - Create Receipt entity with Status="Processing"
+    - Save to database
+    - Call OcrService.ExtractTextAsync()
+    - Parse OCR result into ReceiptItems
+    - Update Receipt with parsed data
+    - Update Status to "Ready" or "Failed"
+    - Return ReceiptResponse
+  - `Task<List<ReceiptResponse>> GetUserReceiptsAsync(Guid userId, int page = 1, int pageSize = 20)`
+    - Filter by UserId
+    - Order by CreatedAt descending
+    - Include pagination
+    - Map to ReceiptResponse DTOs
+  - `Task<ReceiptResponse?> GetReceiptByIdAsync(Guid receiptId, Guid userId)`
+    - Include ReceiptItems
+    - Verify user ownership (userId matches)
+    - Return null if not found or unauthorized
+  - `Task<ReceiptResponse> UpdateReceiptItemsAsync(Guid receiptId, UpdateReceiptItemsRequest request, Guid userId)`
+    - Verify ownership
+    - Update existing items
+    - Recalculate total from items
+    - Return updated ReceiptResponse
+  - `Task<bool> DeleteReceiptAsync(Guid receiptId, Guid userId)`
+    - Verify ownership
+    - Delete receipt image file
+    - Delete receipt and items (cascade)
+    - Return true if successful
+- [ ] Register ReceiptService in DI (`Program.cs`)
+
+### D.3 Receipt Endpoints
+- [ ] Create `Endpoints/ReceiptEndpoints.cs`:
+  - `POST /api/receipts` - Upload & process receipt
+    - [Authorize] required
+    - Accept IFormFile (multipart/form-data)
+    - Extract userId from JWT claims
+    - Call ReceiptService.ProcessReceiptAsync()
+    - Return 201 Created with ReceiptResponse
+    - Handle validation errors (file size, type)
+  - `GET /api/receipts` - List user's receipts
+    - [Authorize] required
+    - Optional query params: page, pageSize
+    - Extract userId from JWT claims
+    - Return 200 OK with List<ReceiptResponse>
+  - `GET /api/receipts/{id}` - Get receipt details
+    - [Authorize] required
+    - Verify ownership
+    - Return 200 OK with ReceiptResponse
+    - Return 404 if not found or unauthorized
+  - `PUT /api/receipts/{id}/items` - Update receipt items
+    - [Authorize] required
+    - Accept UpdateReceiptItemsRequest
+    - Verify ownership
+    - Return 200 OK with updated ReceiptResponse
+  - `DELETE /api/receipts/{id}` - Delete receipt
+    - [Authorize] required
+    - Verify ownership
+    - Return 204 No Content on success
+    - Return 404 if not found or unauthorized
+- [ ] Create extension method `MapReceiptEndpoints(this WebApplication app)`
+- [ ] Register endpoints in `Program.cs` with `app.MapReceiptEndpoints()`
+
+### D.4 Authorization Helper
+- [ ] Create `Infrastructure/ClaimsPrincipalExtensions.cs`:
+  - `Guid GetUserId(this ClaimsPrincipal user)` - Extract userId from JWT claims
+  - Throw UnauthorizedException if claim missing
+- [ ] Use in all protected endpoints
+
+---
+
+## Phase E: Testing & Polish (2-3 hours)
+**Priority: Medium** - Quality assurance
+
+### E.1 Receipt Endpoint Tests
+- [ ] Create `Splittat.API.Tests/ReceiptEndpointsTests.cs`:
+  - Upload receipt (authorized user) - should return 201
+  - Upload receipt (unauthorized) - should return 401
+  - Upload receipt with invalid file type - should return 400
+  - Upload receipt with oversized file - should return 400
+  - Get receipts list (authorized) - should return 200
+  - Get receipt by ID (owner) - should return 200
+  - Get receipt by ID (non-owner) - should return 404
+  - Update receipt items (owner) - should return 200
+  - Update receipt items (non-owner) - should return 404
+  - Delete receipt (owner) - should return 204
+  - Delete receipt (non-owner) - should return 404
+- [ ] Run all tests: `dotnet test`
+
+### E.2 Integration Testing
+- [ ] Test with sample receipt images:
+  - Grocery store receipt
+  - Restaurant receipt with tip
+  - Retail receipt
+  - Poor quality image
+  - Non-receipt image (should handle gracefully)
+- [ ] Verify OCR accuracy
+- [ ] Verify image optimization (check file sizes)
+- [ ] Test error scenarios:
+  - OCR API failure
+  - Database connection failure
+  - File storage failure
+
+### E.3 Docker Testing
+- [ ] Start PostgreSQL container: `docker-compose up -d`
+- [ ] Apply migrations: `dotnet ef database update`
+- [ ] Run backend: `dotnet run`
+- [ ] Test full flow end-to-end:
+  - Register user
+  - Login
+  - Upload receipt
+  - View receipts
+  - Edit receipt items
+  - Delete receipt
+- [ ] Check database records
+- [ ] Check uploaded files in wwwroot/uploads/
+
+### E.4 Code Quality
+- [ ] Add XML documentation comments to public methods
+- [ ] Run code analysis (if configured)
+- [ ] Review and refactor any code smells
+- [ ] Ensure consistent error handling across all endpoints
+- [ ] Verify logging is working correctly
+
+---
+
+## Deployment Checklist (End of Phase 1)
+
+- [ ] All tests passing
+- [ ] Database migrations applied
+- [ ] Environment variables documented
+- [ ] Sample receipts tested successfully
+- [ ] API documentation complete (Swagger)
+- [ ] README.md updated with setup instructions
+- [ ] Code committed to Git
+
+---
+
+## Success Criteria for Phase 1 Backend
+
+✅ Backend API running on localhost:5001 (HTTPS)
 ✅ User can register a new account
 ✅ User can login with email/password
-✅ User receives JWT token and stays logged in
+✅ User receives valid JWT token
 ✅ User can upload a receipt image
 ✅ Receipt is processed via OCR
 ✅ Items are extracted and displayed
 ✅ User can view list of all their receipts
-✅ User can view receipt details
+✅ User can view receipt details with items
 ✅ User can manually edit receipt items
 ✅ User can delete a receipt
-✅ Mobile-responsive design works
-✅ CORS configured correctly
+✅ CORS configured for frontend (localhost:5173)
 ✅ Error handling works properly
-✅ Code is in version control (Git)
+✅ All tests passing
+✅ Logging configured and working
 
 ---
 
-## Next Steps After Phase 1
+## Notes & Decisions
 
-Once Phase 1 is complete, move to Phase 2 which focuses on:
-- Implementing the cost splitting functionality
-- Creating the split calculator
-- Building item assignment UI
-- Adding group management
+### OCR Provider Choice
+**Decision: Google Vision API**
+- Pros: Better accuracy, simpler setup, excellent documentation
+- Cons: Requires Google Cloud account (free tier available)
+- Alternative considered: AWS Textract (more complex, better for forms/tables)
+
+### Storage Strategy
+**Decision: Local file storage (wwwroot/uploads/)**
+- Sufficient for MVP
+- Easy to migrate to cloud storage later (Azure Blob/S3)
+- Add cloud storage in Phase 3 or 4
+
+### Image Format
+**Decision: Convert all images to JPEG**
+- Consistent format for OCR processing
+- Smaller file sizes
+- Good quality at 85% compression
+
+### Pagination
+**Decision: Optional query parameters**
+- Default: page=1, pageSize=20
+- Allows future scalability without breaking changes
+
+---
+
+## Next Steps After Phase 1 Backend
+
+Once Phase 1 backend is complete, coordinate with frontend development to:
+1. Test API integration with frontend
+2. Verify CORS and authentication flow
+3. Test file upload from browser
+4. Validate error handling and user experience
+
+Then move to Phase 2 which focuses on:
+- Implementing cost splitting functionality
+- Creating split calculator service
+- Building group management endpoints
 - Multi-person split calculations
-
----
-
-## Notes
-
-- Focus on getting the core functionality working first
-- Don't over-optimize initially - working code > perfect code
-- Test each component as you build it
-- Commit code frequently to Git
-- Document any issues or decisions in comments
-- Keep the UI simple and functional for MVP
