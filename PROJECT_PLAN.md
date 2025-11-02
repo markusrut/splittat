@@ -62,14 +62,21 @@ A mobile-first web application (PWA) that allows users to scan receipts, automat
 - **Redis** (optional: caching for production)
 
 ### OCR Integration
-- **Option A**: Google Cloud Vision API
-- **Option B**: AWS Textract
+- **Selected**: Azure Computer Vision API
+  - Lowest cost ($5/month for 10k receipts after 5k free tier)
+  - Best .NET integration (Managed Identity support)
+  - Same ecosystem as hosting (Azure App Service)
+  - Good accuracy (90-95%)
+- **Alternative**: Google Vision API (higher accuracy but higher cost)
+- **Alternative**: AWS Textract (better for forms/tables)
 
-### DevOps
+### DevOps & Hosting
 - **Docker** + **Docker Compose** (local development)
 - **GitHub Actions** (CI/CD)
-- Frontend hosting: **Vercel** or **Netlify**
-- Backend hosting: **Azure App Service**, **Railway**, or **Fly.io**
+- **Frontend hosting**: Vercel or Netlify
+- **Backend hosting**: Azure App Service (selected for .NET integration)
+- **Database**: Azure Database for PostgreSQL
+- **Storage**: Azure Blob Storage (production), Local (development)
 
 ---
 
@@ -335,14 +342,51 @@ split/
 - Validation improvements
 - Error handling & logging
 
-### Phase 4: Production Ready (Week 6)
+### Phase 4: Azure Deployment & Production (Week 6)
+
+**Azure Hosting Setup:**
+- Setup Azure account and resource group
+- Deploy backend to Azure App Service
+- Configure Azure Database for PostgreSQL
+- Setup Azure Computer Vision resource with Managed Identity
+- Migrate receipt storage to Azure Blob Storage
+- Configure Application Insights for monitoring
+- Setup CI/CD with GitHub Actions
+- Configure production environment variables
+
+**Testing & QA:**
 - Unit tests (backend services)
 - Integration tests
-- Deploy backend to Azure/Railway
-- Deploy frontend to Vercel/Netlify
-- Setup production database
-- CI/CD pipeline
-- Monitoring & logging
+- Load testing
+- Security audit
+
+**Cost Breakdown:**
+
+**Phase 4a: Free Testing Tier**
+- Azure App Service: Free F1 tier (60 CPU mins/day, 1GB RAM)
+- PostgreSQL: Docker container (local or on App Service)
+- Azure Computer Vision: Free F0 tier (5,000 requests/month)
+- **Total: $0/month** ✅
+
+**Phase 4b: Production Launch - Starter Tier**
+- Azure App Service: Basic B1 tier (~$13/month, 1.75GB RAM, 1 core)
+- Azure Database for PostgreSQL: Basic tier (~$30/month, 1 vCore, 5GB)
+- Azure Computer Vision: Pay-as-you-go (~$5/month for 10k receipts after free tier)
+- **Total: ~$48/month** for small-scale production
+
+**Phase 4c: Future Scaling**
+- Azure App Service: Standard S1 with auto-scale (~$70/month)
+- Azure Database for PostgreSQL: General Purpose (~$100/month)
+- Azure Blob Storage: For receipt images (~$5/month)
+- Azure Computer Vision: ~$50/month for 100k receipts
+- **Total: ~$225/month** for 100k receipts/month
+
+**Benefits of Azure Ecosystem:**
+- Managed Identity (no credential management needed)
+- Single billing dashboard
+- Excellent .NET integration
+- Easy deployment: `az webapp up --name splittat-api`
+- Seamless Computer Vision integration
 
 ### Phase 5: Optional Enhancements
 - Payment integration (Venmo, PayPal links)
@@ -459,8 +503,12 @@ npm install react-hook-form @hookform/resolvers zod
 
 ## Notes
 
-- Start with simple local file storage, can migrate to cloud storage later
-- Use Google Vision API initially (easier setup than AWS Textract)
-- Keep authentication simple with JWT, no OAuth initially
-- Focus on core receipt splitting functionality first
-- Progressive enhancement - basic features first, polish later
+- **OCR Provider**: Using Azure Computer Vision API for best .NET integration and lowest cost
+- **Storage Strategy**: Start with local file storage (wwwroot/uploads), migrate to Azure Blob Storage in Phase 4
+- **Hosting**: Azure ecosystem chosen for seamless integration (App Service + Computer Vision + PostgreSQL)
+- **Authentication**: Keep simple with JWT, no OAuth initially
+- **Development Approach**: Focus on core receipt splitting functionality first, progressive enhancement
+- **Cost Management**:
+  - Development/Testing: Free tier ($0/month with Azure F0 + Computer Vision free tier)
+  - Production Launch: Starter tier (~$48/month for small scale)
+  - Future Scaling: ~$225/month for 100k receipts/month

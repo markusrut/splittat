@@ -9,8 +9,9 @@ A mobile-first PWA for scanning receipts, extracting items via OCR, and splittin
 **Stack:**
 - Frontend: React 19.1 + TypeScript 5.9 + Vite 7.1 + TailwindCSS 4.1
 - Backend: .NET 9 Minimal API + Entity Framework Core + PostgreSQL
-- OCR: Google Vision API or AWS Textract
-- Storage: Azure Blob/S3/Local for receipt images
+- OCR: Azure Computer Vision API (lowest cost, best .NET integration)
+- Storage: Local (wwwroot/uploads) for MVP, Azure Blob Storage for production
+- Hosting: Azure App Service (planned for production deployment)
 
 **Installed Frontend Dependencies:**
 - **Core:** React 19.1.1, React DOM 19.1.1, React Router DOM 7.9.5
@@ -315,10 +316,37 @@ Test edge cases:
 
 **Phase 2:** Split creation, item assignment UI, group management
 **Phase 3:** PWA features (offline, installable)
-**Phase 4:** Production deployment, CI/CD
+**Phase 4:** Production deployment, CI/CD (Azure App Service)
 **Phase 5:** Enhancements (payments, notifications, sharing)
 
 See [PHASE1_PLAN.md](PHASE1_PLAN.md) for detailed Phase 1 task breakdown and progress tracking.
+
+## Azure Hosting Plan
+
+### Phase 1 (MVP Development - Testing)
+**Cost: $0/month**
+- Azure App Service: Free F1 tier (60 CPU mins/day, 1GB RAM)
+- PostgreSQL: Docker container (local or on App Service)
+- Azure Computer Vision: Free F0 tier (5,000 requests/month)
+
+### Phase 2 (Production Launch - Starter)
+**Cost: ~$48/month**
+- Azure App Service: Basic B1 tier (~$13/month, 1.75GB RAM, 1 core)
+- Azure Database for PostgreSQL: Basic tier (~$30/month, 1 vCore, 5GB storage)
+- Azure Computer Vision: Pay-as-you-go (~$5/month for 10k receipts after free tier)
+
+### Future Scaling (Phase 4+)
+**Cost: ~$225/month for 100k receipts/month**
+- Azure App Service: Standard S1 with auto-scale (~$70/month)
+- Azure Database for PostgreSQL: General Purpose (~$100/month)
+- Azure Blob Storage: For receipt images (~$5/month)
+- Azure Computer Vision: ~$50/month for 100k receipts
+
+**Benefits of Azure ecosystem:**
+- Managed Identity (no credential management needed)
+- Single billing dashboard
+- Excellent .NET integration
+- Easy deployment: `az webapp up --name splittat-api`
 
 ## Configuration & Environment
 
@@ -375,9 +403,11 @@ In `appsettings.json` or `appsettings.Development.json`:
     "Audience": "Splittat.Frontend",
     "ExpirationMinutes": 60
   },
-  "Ocr": {
-    "Provider": "GoogleVision",
-    "ApiKey": "..."
+  "Azure": {
+    "ComputerVision": {
+      "Endpoint": "https://your-resource.cognitiveservices.azure.com/",
+      "ApiKey": "your-api-key-here"
+    }
   },
   "Storage": {
     "Type": "Local",
@@ -385,6 +415,18 @@ In `appsettings.json` or `appsettings.Development.json`:
   }
 }
 ```
+
+**For development**, use .NET User Secrets to avoid committing credentials:
+```bash
+dotnet user-secrets init
+dotnet user-secrets set "Azure:ComputerVision:Endpoint" "https://your-resource.cognitiveservices.azure.com/"
+dotnet user-secrets set "Azure:ComputerVision:ApiKey" "your-api-key"
+```
+
+**For production (Azure App Service)**, use Managed Identity instead of API keys:
+- Enable Managed Identity on App Service
+- Grant Computer Vision permissions to the identity
+- Code automatically uses `DefaultAzureCredential` (no secrets needed)
 
 ### Frontend Environment Variables
 Create `.env.local`:

@@ -131,22 +131,30 @@ Phase 1 focuses on completing the backend API infrastructure with authentication
 **Priority: High** - Core feature for receipt processing
 
 ### C.1 Choose OCR Provider
-**Decision: Google Vision API (recommended for MVP)**
-- Reasons: Better accuracy, simpler setup, good documentation
-- Alternative: AWS Textract (more complex, better for structured documents)
+**Decision: Azure Computer Vision API**
+- Reasons:
+  - Best .NET integration (Managed Identity support)
+  - Lowest cost ($5/month for 10k receipts after 5k free tier)
+  - Good accuracy (90-95%)
+  - Same ecosystem as planned hosting (Azure App Service)
+  - No credential management needed with Managed Identity
+- Alternative considered: Google Vision API (slightly better accuracy but higher cost, requires credential files)
 
 ### C.2 OCR Service Setup
-- [ ] Install NuGet package: `Google.Cloud.Vision.V1`
-- [ ] Create Google Cloud account (if needed)
-- [ ] Enable Vision API and get API credentials (JSON key file)
+- [ ] Install NuGet package: `Microsoft.Azure.CognitiveServices.Vision.ComputerVision`
+- [ ] Create Azure Computer Vision resource (Free tier F0 for testing)
+- [ ] Get endpoint and API key from Azure portal
 - [ ] Store credentials using .NET User Secrets:
   - `dotnet user-secrets init`
-  - `dotnet user-secrets set "Ocr:CredentialsPath" "/path/to/credentials.json"`
+  - `dotnet user-secrets set "Azure:ComputerVision:Endpoint" "https://your-resource.cognitiveservices.azure.com/"`
+  - `dotnet user-secrets set "Azure:ComputerVision:ApiKey" "your-api-key"`
 - [ ] Add OCR configuration to `appsettings.json`:
   ```json
-  "Ocr": {
-    "Provider": "GoogleVision",
-    "CredentialsPath": ""
+  "Azure": {
+    "ComputerVision": {
+      "Endpoint": "",
+      "ApiKey": ""
+    }
   }
   ```
 
@@ -162,9 +170,9 @@ Phase 1 focuses on completing the backend API infrastructure with authentication
 ### C.4 OCR Service Implementation
 - [ ] Create `Services/OcrService.cs`:
   - `Task<OcrResult> ExtractTextAsync(string imagePath)`
-  - Google Vision API integration
+  - Azure Computer Vision API integration (RecognizePrintedTextInStreamAsync)
   - Error handling for API failures
-  - Retry logic for transient errors (max 3 retries)
+  - Retry logic for transient errors (max 3 retries with Polly)
   - Log API calls and results
 - [ ] Register OcrService in DI (`Program.cs`)
 
@@ -374,22 +382,39 @@ Phase 1 focuses on completing the backend API infrastructure with authentication
 ## Notes & Decisions
 
 ### OCR Provider Choice
-**Decision: Google Vision API**
-- Pros: Better accuracy, simpler setup, excellent documentation
-- Cons: Requires Google Cloud account (free tier available)
-- Alternative considered: AWS Textract (more complex, better for forms/tables)
+**Decision: Azure Computer Vision API**
+- Pros:
+  - Lowest cost ($5/month for 10k receipts after free tier)
+  - Best .NET integration (Managed Identity support)
+  - Same ecosystem as hosting (simplifies deployment)
+  - Good accuracy (90-95%)
+  - Free tier: 5,000 requests/month (perfect for testing)
+- Cons:
+  - Slightly lower accuracy than Google Vision (95%+)
+- Alternative considered:
+  - Google Vision API (better accuracy, higher cost, requires credential files)
+  - AWS Textract (more complex, better for forms/tables)
+  - Tesseract (free but poor accuracy, high CPU cost)
+
+### Hosting Strategy
+**Decision: Azure ecosystem for production deployment (Phase 4)**
+- See [PROJECT_PLAN.md](PROJECT_PLAN.md) Phase 4 for detailed Azure hosting strategy
+- Development: Free tier ($0/month)
+- Production Launch: Starter tier (~$48/month)
+- Future Scaling: ~$225/month for 100k receipts/month
 
 ### Storage Strategy
-**Decision: Local file storage (wwwroot/uploads/)**
-- Sufficient for MVP
-- Easy to migrate to cloud storage later (Azure Blob/S3)
-- Add cloud storage in Phase 3 or 4
+**Decision: Local file storage (wwwroot/uploads/) for Phase 1**
+- Sufficient for MVP and testing
+- Easy to migrate to Azure Blob Storage later (Phase 4)
+- Migration path: Simple service swap with same interface
 
 ### Image Format
 **Decision: Convert all images to JPEG**
 - Consistent format for OCR processing
-- Smaller file sizes
+- Smaller file sizes (better for API uploads)
 - Good quality at 85% compression
+- OCR APIs work best with JPEG
 
 ### Pagination
 **Decision: Optional query parameters**
