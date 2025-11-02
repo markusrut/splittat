@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Split.API", "Split.API\Split.API.csproj", "{BB2DF095-7580-77AC-0003-1B7DC74E01C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB2DF095-7580-77AC-0003-1B7DC74E01C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB2DF095-7580-77AC-0003-1B7DC74E01C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB2DF095-7580-77AC-0003-1B7DC74E01C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB2DF095-7580-77AC-0003-1B7DC74E01C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BB2DF095-7580-77AC-0003-1B7DC74E01C2} = {1AE8ACA6-933B-BF2A-3671-3E2EAC007D16}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05671687-4DC3-411F-9FB1-5BA06E001E1C}
+	EndGlobalSection
+EndGlobal
