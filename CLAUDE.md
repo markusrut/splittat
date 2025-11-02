@@ -39,7 +39,13 @@ A mobile-first PWA for scanning receipts, extracting items via OCR, and splittin
 - **Configuration:** `vitest.config.ts` with globals, jsdom environment, setup files
 - **Custom Test Utilities:** `src/test/test-utils.tsx` provides custom render with QueryClient and Router providers
 - **Test Location:** Adjacent to source files (e.g., `Button.tsx` → `Button.test.tsx`)
-- **Current Coverage:** 6 passing tests for Button component
+- **Current Coverage:** 51 passing tests across 6 test files
+  - Button component: 6 tests
+  - HomePage: 6 tests (including mobile/tablet/desktop snapshots)
+  - LoginPage: 7 tests (including mobile/tablet/desktop snapshots + loading/error states)
+  - RegisterPage: 8 tests (including mobile/tablet/desktop snapshots + loading/error states)
+  - ReceiptsPage: 11 tests (including responsive snapshots + loading/empty/error states)
+  - ReceiptDetailPage: 13 tests (including responsive snapshots + loading/error/processing states)
 
 ## Development Commands
 
@@ -47,7 +53,7 @@ A mobile-first PWA for scanning receipts, extracting items via OCR, and splittin
 ```bash
 yarn dev             # Start dev server (Vite) on localhost:5173
 yarn build           # Build for production (TypeScript + Vite)
-yarn lint            # Run ESLint
+yarn lint            # Run ESLint + TypeScript type checking
 yarn preview         # Preview production build
 yarn test            # Run tests in watch mode
 yarn test:ui         # Run tests with Vitest UI
@@ -240,15 +246,16 @@ Receipt (1) ----< (many) Split (1) ----< (many) ItemAssignment >---- (1) Receipt
 **IMPORTANT: After making ANY code changes in the frontend, ALWAYS run these commands in order:**
 
 ```bash
-yarn format    # Format all code with Prettier
-yarn lint      # Check for ESLint errors/warnings
-yarn test:run  # Run all tests in CI mode
+yarn format         # Format all code with Prettier
+yarn lint           # Run ESLint + TypeScript type checking
+yarn test:run       # Run all tests in CI mode
 ```
 
 **All three commands must pass with 0 errors/warnings before committing code.**
 
 - `yarn format` ensures consistent code style across the codebase
-- `yarn lint` catches TypeScript errors, React issues, and code quality problems
+- `yarn lint` runs both ESLint (for code quality) and TypeScript type checking (for type correctness)
+  - Combines `eslint .` + `tsc --noEmit` into a single command
 - `yarn test:run` verifies all unit tests pass
 
 **Test-Driven Development:**

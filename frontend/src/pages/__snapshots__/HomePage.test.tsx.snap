@@ -1,0 +1,124 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HomePage > Snapshot Tests > matches snapshot on desktop (1280px) 1`] = `
+<div>
+  <div
+    class="min-h-screen flex items-center justify-center bg-linear-to-br from-primary-500 to-secondary-500"
+  >
+    <div
+      class="text-center text-white p-8"
+    >
+      <h1
+        class="text-6xl font-bold mb-4"
+      >
+        Splittat
+      </h1>
+      <p
+        class="text-xl mb-8"
+      >
+        Receipt splitting made easy
+      </p>
+      <div
+        class="space-x-4"
+      >
+        <a
+          class="inline-block bg-primary-200 text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          data-discover="true"
+          href="/login"
+        >
+          Login
+        </a>
+        <a
+          class="inline-block bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors"
+          data-discover="true"
+          href="/register"
+        >
+          Sign Up
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`HomePage > Snapshot Tests > matches snapshot on mobile (375px) 1`] = `
+<div>
+  <div
+    class="min-h-screen flex items-center justify-center bg-linear-to-br from-primary-500 to-secondary-500"
+  >
+    <div
+      class="text-center text-white p-8"
+    >
+      <h1
+        class="text-6xl font-bold mb-4"
+      >
+        Splittat
+      </h1>
+      <p
+        class="text-xl mb-8"
+      >
+        Receipt splitting made easy
+      </p>
+      <div
+        class="space-x-4"
+      >
+        <a
+          class="inline-block bg-primary-200 text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          data-discover="true"
+          href="/login"
+        >
+          Login
+        </a>
+        <a
+          class="inline-block bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors"
+          data-discover="true"
+          href="/register"
+        >
+          Sign Up
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`HomePage > Snapshot Tests > matches snapshot on tablet (768px) 1`] = `
+<div>
+  <div
+    class="min-h-screen flex items-center justify-center bg-linear-to-br from-primary-500 to-secondary-500"
+  >
+    <div
+      class="text-center text-white p-8"
+    >
+      <h1
+        class="text-6xl font-bold mb-4"
+      >
+        Splittat
+      </h1>
+      <p
+        class="text-xl mb-8"
+      >
+        Receipt splitting made easy
+      </p>
+      <div
+        class="space-x-4"
+      >
+        <a
+          class="inline-block bg-primary-200 text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          data-discover="true"
+          href="/login"
+        >
+          Login
+        </a>
+        <a
+          class="inline-block bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors"
+          data-discover="true"
+          href="/register"
+        >
+          Sign Up
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
